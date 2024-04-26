@@ -2611,21 +2611,6 @@ static void node_connector_callback(redisAsyncContext *ac, void *rep, void *priv
         }
       }
       
-      if(node->role == REDIS_NODE_ROLE_MASTER) {
-        if(!node->cluster.enabled && !node_discover_slaves_from_info_reply(node, reply)) {
-          return node_connector_fail(node, "failed parsing slaves from INFO");
-        }
-      }
-      else if(node->role == REDIS_NODE_ROLE_SLAVE) {
-          redis_connect_params_t   *rcp;
-        if(!(rcp = parse_info_master(node, reply->str))) {
-          return node_connector_fail(node, "failed parsing master from INFO");
-        }
-        if(!node->cluster.enabled) {
-          node_discover(node, rcp, REDIS_NODE_ROLE_MASTER);
-        }
-      }
-      
       node->state++;
       /* fall through */
     case REDIS_NODE_PUBSUB_GET_INFO:
